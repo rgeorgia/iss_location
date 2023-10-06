@@ -1,6 +1,8 @@
 use error_chain::error_chain;
 use serde_derive::Deserialize;
 use chrono::{NaiveDateTime};
+use std::io;
+use std::io::Write; // <--- bring flush() into scope
 
 error_chain! {
     foreign_links {
@@ -21,15 +23,14 @@ struct IssPosition {
 }
 #[tokio::main]
 async fn main() -> Result<()> {
-    let res = reqwest::get("http://api.open-notify.org/iss-now.json").await?;
-    // println!("Status: {}", res.status());
-    // println!("Headers:\n{:#?}", res.headers());
+    for count in 1..11 {
+        let res = reqwest::get("http://api.open-notify.org/iss-now.json").await?;
+        let response = res.json::<IssPosition>().await?;
 
-    let response = res.json::<IssPosition>().await?;
-
-    println!("Message: {}", response.message);
-    println!("Long: {}", response.iss_position.longitude);
-    println!("Lat: {}", response.iss_position.latitude);
-    println!("Time: {:?}", NaiveDateTime::from_timestamp_opt(response.timestamp, 0).unwrap());
+        print!("Long: {}", response.iss_position.longitude);
+        print!("Lat: {}", response.iss_position.latitude);
+        print!("Time: {:?}", NaiveDateTime::from_timestamp_opt(response.timestamp, 0).unwrap());
+        io::stdout().flush().unwrap();
+    }
     Ok(())
 }
