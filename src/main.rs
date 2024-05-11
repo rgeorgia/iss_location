@@ -27,9 +27,9 @@ async fn main() -> Result<()> {
         let res = reqwest::get("http://api.open-notify.org/iss-now.json").await?;
         let response = res.json::<IssPosition>().await?;
 
-        print!("Long: {}", response.iss_position.longitude);
-        print!("Lat: {}", response.iss_position.latitude);
-        print!("Time: {:?}", NaiveDateTime::from_timestamp_opt(response.timestamp, 0).unwrap());
+        print!("Long: {}\t", response.iss_position.longitude);
+        print!("Lat: {}\t", response.iss_position.latitude);
+        print!("Time: {:?}\n", NaiveDateTime::from_timestamp_opt(response.timestamp, 0).unwrap());
         io::stdout().flush().unwrap();
     }
     Ok(())
